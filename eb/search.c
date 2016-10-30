@@ -434,6 +434,7 @@ eb_hit_list(EB_Book *book, int max_hit_count, EB_Hit *hit_list, int *hit_count)
     switch (book->search_contexts->code) {
     case EB_SEARCH_EXACTWORD:
     case EB_SEARCH_WORD:
+    case EB_SEARCH_ALL:
     case EB_SEARCH_ENDWORD:
 	/*
 	 * In case of exactword, word of endword search.

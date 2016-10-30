@@ -72,7 +72,7 @@ EB_Error_Code eb_search_all(EB_Book* book, const char input_word[]) {
         /* Initialize search context. */
         eb_reset_search_contexts(book);
         EB_Search_Context* context = book->search_contexts;
-        context->code = EB_SEARCH_WORD;
+        context->code = EB_SEARCH_ALL;
         context->compare_pre = eb_match_all;
         context->compare_single = eb_match_all;
         context->compare_group = eb_match_all;
