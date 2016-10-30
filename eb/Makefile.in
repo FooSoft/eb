@@ -76,7 +76,7 @@ am_libeb_la_OBJECTS = appendix.lo appsub.lo bcd.lo binary.lo bitmap.lo \
 	keyword.lo lock.lo log.lo match.lo menu.lo multi.lo narwalt.lo \
 	narwfont.lo readtext.lo search.lo setword.lo stopcode.lo \
 	strcasecmp.lo subbook.lo text.lo widealt.lo widefont.lo \
-	word.lo zio.lo $(am__objects_1)
+	word.lo all.lo zio.lo $(am__objects_1)
 libeb_la_OBJECTS = $(am_libeb_la_OBJECTS)
 libeb_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(libeb_la_LDFLAGS) \
