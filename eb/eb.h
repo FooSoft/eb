@@ -144,6 +144,10 @@ void eb_unset_subbook(EB_Book *book);
 int eb_have_word_search(EB_Book *book);
 EB_Error_Code eb_search_word(EB_Book *book, const char *input_word);
 
+/* all.c */
+int eb_have_all_search(EB_Book *book);
+EB_Error_Code eb_search_all(EB_Book* book, const char input_word[]);
+
 /* for backward compatibility */
 #define eb_suspend eb_unset_subbook
 #define eb_initialize_all_subbooks eb_load_all_subbooks
