@@ -146,7 +146,9 @@ EB_Error_Code eb_search_word(EB_Book *book, const char *input_word);
 
 /* all.c */
 int eb_have_all_search(EB_Book *book);
-EB_Error_Code eb_search_all(EB_Book* book, const char input_word[]);
+EB_Error_Code eb_search_all_alphabet(EB_Book* book);
+EB_Error_Code eb_search_all_kana(EB_Book* book);
+EB_Error_Code eb_search_all_asis(EB_Book* book);
 
 /* for backward compatibility */
 #define eb_suspend eb_unset_subbook

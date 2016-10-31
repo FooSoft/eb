@@ -32,36 +32,12 @@ static int eb_match_all(const char word[], const char pattern[], size_t length) 
     return 0;
 }
 
-int eb_have_all_search(EB_Book* book) {
-    eb_lock(&book->lock);
-    LOG(("in: eb_have_all_search(book=%d)", book->code));
-
-    int result = 0;
-    for (;;) {
-        const EB_Subbook * sb = book->subbook_current;
-        if (sb == NULL) {
-            break;
-        }
-
-        if (sb->word_alphabet.start_page == 0 && sb->word_asis.start_page == 0 && sb->word_kana.start_page == 0) {
-            break;
-        }
-
-        result = 1;
-        break;
-    }
-
-    LOG(("out: eb_have_all_search() = %d", result));
-    eb_unlock(&book->lock);
-    return result;
-}
-
-EB_Error_Code eb_search_all(EB_Book* book, const char input_word[]) {
+static EB_Error_Code eb_search_all(EB_Book* book, EB_Word_Code word_code) {
     EB_Error_Code error_code = EB_SUCCESS;
 
     do {
         eb_lock(&book->lock);
-        LOG(("in: eb_search_all(book=%d, input_word=%s)", book->code, eb_quoted_string(input_word)));
+        LOG(("in: eb_search_all(book=%d)", book->code));
 
         /* Current subbook must have been set. */
         if (book->subbook_current == NULL) {
@@ -77,28 +53,11 @@ EB_Error_Code eb_search_all(EB_Book* book, const char input_word[]) {
         context->compare_single = eb_match_all;
         context->compare_group = eb_match_all;
 
-        /* Make a fixed word and a canonicalized word to search from input_word. */
-        EB_Word_Code word_code;
-        error_code = eb_set_word(
-            book,
-            input_word,
-            context->word,
-            context->canonicalized_word,
-            &word_code
-        );
-
-        if (error_code != EB_SUCCESS) {
-            break;
-        }
-
         /* Get a page number. */
         switch (word_code) {
             case EB_WORD_ALPHABET:
                 if (book->subbook_current->word_alphabet.start_page != 0) {
                     context->page = book->subbook_current->word_alphabet.start_page;
-                }
-                else if (book->subbook_current->word_asis.start_page != 0) {
-                    context->page = book->subbook_current->word_asis.start_page;
                 }
                 else {
                     error_code = EB_ERR_NO_SUCH_SEARCH;
@@ -107,9 +66,6 @@ EB_Error_Code eb_search_all(EB_Book* book, const char input_word[]) {
             case EB_WORD_KANA:
                 if (book->subbook_current->word_kana.start_page != 0) {
                     context->page = book->subbook_current->word_kana.start_page;
-                }
-                else if (book->subbook_current->word_asis.start_page != 0) {
-                    context->page = book->subbook_current->word_asis.start_page;
                 }
                 else {
                     error_code = EB_ERR_NO_SUCH_SEARCH;
@@ -148,4 +104,40 @@ EB_Error_Code eb_search_all(EB_Book* book, const char input_word[]) {
     eb_unlock(&book->lock);
 
     return error_code;
+}
+
+int eb_have_all_search(EB_Book* book) {
+    eb_lock(&book->lock);
+    LOG(("in: eb_have_all_search(book=%d)", book->code));
+
+    int result = 0;
+    for (;;) {
+        const EB_Subbook * sb = book->subbook_current;
+        if (sb == NULL) {
+            break;
+        }
+
+        if (sb->word_alphabet.start_page == 0 && sb->word_asis.start_page == 0 && sb->word_kana.start_page == 0) {
+            break;
+        }
+
+        result = 1;
+        break;
+    }
+
+    LOG(("out: eb_have_all_search() = %d", result));
+    eb_unlock(&book->lock);
+    return result;
+}
+
+EB_Error_Code eb_search_all_alphabet(EB_Book* book) {
+    return eb_search_all(book, EB_WORD_ALPHABET);
+}
+
+EB_Error_Code eb_search_all_kana(EB_Book* book) {
+    return eb_search_all(book, EB_WORD_KANA);
+}
+
+EB_Error_Code eb_search_all_asis(EB_Book* book) {
+    return eb_search_all(book, EB_WORD_OTHER);
 }
