@@ -342,7 +342,6 @@ getopt(int nargc, char * const *nargv, const char *options)
 	}
 	return retval;
 }
-#endif
 
 /*
  * getopt_long --
@@ -478,3 +477,5 @@ getopt_long(int nargc, char * const *nargv, const char *options,
 	}
 	return retval;
 }
+
+#endif
