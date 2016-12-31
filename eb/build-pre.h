@@ -29,6 +29,10 @@
 #ifndef EB_BUILD_PRE_H
 #define EB_BUILD_PRE_H
 
+#ifdef _WIN32
+#define DOS_FILE_PATH
+#endif
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
