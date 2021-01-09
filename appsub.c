@@ -12,7 +12,7 @@
  * 3. Neither the name of the project nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE PROJECT AND CONTRIBUTORS ``AS IS'' AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -746,5 +746,3 @@ eb_unset_appendix_subbook(EB_Appendix *appendix)
     LOG(("out: eb_unset_appendix_subbook()"));
     eb_unlock(&appendix->lock);
 }
-
-

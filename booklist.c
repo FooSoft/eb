@@ -12,7 +12,7 @@
  * 3. Neither the name of the project nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE PROJECT AND CONTRIBUTORS ``AS IS'' AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -40,14 +40,6 @@
  * BookList ID counter.
  */
 static EB_Book_Code booklist_counter = 0;
-
-/*
- * Mutex for `booklist_counter'.
- */
-#ifdef ENABLE_PTHREAD
-static pthread_mutex_t booklist_counter_mutex = PTHREAD_MUTEX_INITIALIZER;
-#endif
-
 
 /*
  * Initialize a book list.
@@ -270,5 +262,3 @@ eb_booklist_book_title(EB_BookList *booklist, int book_index,
     eb_unlock(&booklist->lock);
     return error_code;
 }
-
-

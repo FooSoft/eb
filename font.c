@@ -12,7 +12,7 @@
  * 3. Neither the name of the project nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE PROJECT AND CONTRIBUTORS ``AS IS'' AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -275,21 +275,11 @@ eb_set_font(EB_Book *book, EB_Font_Code font_code)
 	error_code = eb_open_narrow_font_file(book, font_code);
 	if (error_code != EB_SUCCESS)
 	    goto failed;
-	if (is_ebnet_url(book->path)) {
-	    error_code = eb_load_narrow_font_glyphs(book, font_code);
-	    if (error_code != EB_SUCCESS)
-		goto failed;
-	}
     }
     if (subbook->wide_current != NULL) {
 	error_code = eb_open_wide_font_file(book, font_code);
 	if (error_code != EB_SUCCESS)
 	    goto failed;
-	if (is_ebnet_url(book->path)) {
-	    error_code = eb_load_wide_font_glyphs(book, font_code);
-	    if (error_code != EB_SUCCESS)
-		goto failed;
-	}
     }
 
 
@@ -547,5 +537,3 @@ eb_font_height2(EB_Font_Code font_code, int *height)
     LOG(("out: eb_font_height2() = %s", eb_error_string(error_code)));
     return error_code;
 }
-
-

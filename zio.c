@@ -12,7 +12,7 @@
  * 3. Neither the name of the project nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE PROJECT AND CONTRIBUTORS ``AS IS'' AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -26,10 +26,6 @@
  * SUCH DAMAGE.
  */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include <stdio.h>
 #include <sys/types.h>
 #include <errno.h>
@@ -38,17 +34,9 @@
 #include <limits.h>
 #include <unistd.h>
 #include <fcntl.h>
-
-#ifdef ENABLE_PTHREAD
-#include <pthread.h>
-#endif
-
 #include <zlib.h>
 
 #include "zio.h"
-#ifdef ENABLE_EBNET
-#include "ebnet.h"
-#endif
 
 /*
  * Flags for open().
@@ -107,17 +95,6 @@ extern void eb_log(const char *, ...);
 	+ (*(const unsigned char *)((p) + 4)))
 
 /*
- * Test whether the path is URL with the `ebnet' scheme.
- */
-#define is_ebnet_url(p) \
-	(   ((p)[0] == 'E' || (p)[0] == 'e') \
-	 && ((p)[1] == 'B' || (p)[1] == 'b') \
-	 && ((p)[2] == 'N' || (p)[2] == 'n') \
-	 && ((p)[3] == 'E' || (p)[3] == 'e') \
-	 && ((p)[4] == 'T' || (p)[4] == 't') \
-	 && (p)[5] == ':' && (p)[6] == '/' && (p)[7] == '/')
-
-/*
  * Size of a page (The term `page' means `block' in JIS X 4081).
  */
 #define ZIO_SIZE_PAGE			2048
@@ -155,13 +132,6 @@ static off_t cache_location;
  * Zio object counter.
  */
 static int zio_counter = 0;
-
-/*
- * Mutex for cache variables.
- */
-#ifdef ENABLE_PTHREAD
-static pthread_mutex_t zio_mutex = PTHREAD_MUTEX_INITIALIZER;
-#endif
 
 /*
  * Test whether `off_t' represents a large integer.
@@ -257,7 +227,6 @@ zio_initialize(Zio *zio)
     zio->huffman_root = NULL;
     zio->code = ZIO_INVALID;
     zio->file_size = 0;
-    zio->is_ebnet = 0;
 
     LOG(("out: zio_initialize()"));
 }
@@ -1960,17 +1929,7 @@ zio_unzip_slice_sebxa(Zio *zio, char *out_buffer)
 static int
 zio_open_raw(Zio *zio, const char *file_name)
 {
-#ifdef ENABLE_EBNET
-    if (is_ebnet_url(file_name)) {
-	zio->is_ebnet = 1;
-	zio->file = ebnet_open(file_name);
-    } else {
-	zio->is_ebnet = 0;
-	zio->file = open(file_name, O_RDONLY | O_BINARY);
-    }
-#else
     zio->file = open(file_name, O_RDONLY | O_BINARY);
-#endif
 
     return zio->file;
 }
@@ -1985,14 +1944,7 @@ zio_open_raw(Zio *zio, const char *file_name)
 static void
 zio_close_raw(Zio *zio)
 {
-#ifdef ENABLE_EBNET
-    if (zio->is_ebnet)
-	ebnet_close(zio->file);
-    else
 	close(zio->file);
-#else
-	close(zio->file);
-#endif
 }
 
 
@@ -2007,15 +1959,7 @@ zio_lseek_raw(Zio *zio, off_t offset, int whence)
 {
     off_t result;
 
-    if (zio->is_ebnet) {
-#ifdef ENABLE_EBNET
-	result = ebnet_lseek(zio->file, offset, whence);
-#else
-	result = -1;
-#endif
-    } else {
 	result = lseek(zio->file, offset, whence);
-    }
 
     return result;
 }
@@ -2035,16 +1979,6 @@ zio_read_raw(Zio *zio, void *buffer, size_t length)
 
     LOG(("in: zio_read_raw(file=%d, length=%ld)", zio->file, (long)length));
 
-    if (zio->is_ebnet) {
-	/*
-	 * Read from a remote server.
-	 */
-#ifdef ENABLE_EBNET
-	result = ebnet_read(&zio->file, buffer, length);
-#else
-	result = -1;
-#endif
-    } else {
 	/*
 	 * Read from a local file.
 	 */
@@ -2067,7 +2001,6 @@ zio_read_raw(Zio *zio, void *buffer, size_t length)
 	}
 
 	result = length - rest_length;
-    }
 
     LOG(("out: zio_read_raw() = %ld", (long)result));
     return result;
@@ -2079,5 +2012,3 @@ zio_read_raw(Zio *zio, void *buffer, size_t length)
     LOG(("out: zio_read_raw() = %ld", (long)-1));
     return -1;
 }
-
-

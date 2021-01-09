@@ -44,12 +44,6 @@ eb_initialize_library(void)
     LOG(("in: eb_initialize_library()"));
 
     eb_initialize_default_hookset();
-#ifdef ENABLE_NLS
-    bindtextdomain(EB_TEXT_DOMAIN_NAME, EB_LOCALEDIR);
-#endif
-#ifdef ENABLE_EBNET
-    ebnet_initialize();
-#endif
     if (zio_initialize_library() < 0) {
 	error_code = EB_ERR_MEMORY_EXHAUSTED;
 	goto failed;
@@ -77,9 +71,6 @@ eb_finalize_library(void)
     LOG(("in: eb_finalize_library()"));
 
     zio_finalize_library();
-#ifdef ENABLE_EBNET
-    ebnet_finalize();
-#endif
 
     LOG(("out: eb_finalize_library()"));
 }

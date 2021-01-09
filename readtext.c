@@ -12,7 +12,7 @@
  * 3. Neither the name of the project nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE PROJECT AND CONTRIBUTORS ``AS IS'' AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -71,13 +71,6 @@ static size_t cache_length;
  * Null hook.
  */
 static const EB_Hook null_hook = {EB_HOOK_NULL, NULL};
-
-/*
- * Mutex for cache variables.
- */
-#ifdef ENABLE_PTHREAD
-static pthread_mutex_t cache_mutex = PTHREAD_MUTEX_INITIALIZER;
-#endif
 
 /*
  * Unexported functions.
@@ -1054,12 +1047,12 @@ text_max_length=%ld, forward=%d)",
 		    goto failed;
 		}
 		argc = 7;
-		argv[1] = eb_bcd2(cache_p + 8);	  
-		argv[2] = eb_bcd2(cache_p + 10);	  
-		argv[3] = eb_bcd2(cache_p + 12);	  
-		argv[4] = eb_bcd2(cache_p + 14);	  
-		argv[5] = eb_bcd4(cache_p + 28);	  
-		argv[6] = eb_bcd2(cache_p + 32);	  
+		argv[1] = eb_bcd2(cache_p + 8);
+		argv[2] = eb_bcd2(cache_p + 10);
+		argv[3] = eb_bcd2(cache_p + 12);
+		argv[4] = eb_bcd2(cache_p + 14);
+		argv[5] = eb_bcd4(cache_p + 28);
+		argv[6] = eb_bcd2(cache_p + 32);
 		hook = hookset->hooks + EB_HOOK_BEGIN_CLICKABLE_AREA;
 	      break;
 

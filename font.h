@@ -12,7 +12,7 @@
  * 3. Neither the name of the project nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE PROJECT AND CONTRIBUTORS ``AS IS'' AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -125,7 +125,7 @@ extern "C" {
 #define EB_SIZE_NARROW_FONT_48_PNG		291
 #define EB_SIZE_WIDE_FONT_48_PNG		435
 
-#define EB_SIZE_FONT_IMAGE	EB_SIZE_WIDE_FONT_48_XPM	    
+#define EB_SIZE_FONT_IMAGE	EB_SIZE_WIDE_FONT_48_XPM
 
 /*
  * Function declarations.

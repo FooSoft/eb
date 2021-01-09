@@ -12,7 +12,7 @@
  * 3. Neither the name of the project nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE PROJECT AND CONTRIBUTORS ``AS IS'' AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -29,14 +29,6 @@
 #ifndef EB_BUILD_PRE_H
 #define EB_BUILD_PRE_H
 
-#ifdef _WIN32
-#define DOS_FILE_PATH
-#endif
-
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include <stdio.h>
 #include <errno.h>
 #include <sys/types.h>
@@ -49,23 +41,6 @@
 #include <dirent.h>
 #include <fcntl.h>
 #include <sys/time.h>
-
-#ifdef HAVE_DIRECT_H
-#include <direct.h>
-#endif
-
-#ifdef HAVE__GETDCWD
-#define getcwd _getcwd
-#define getdcwd _getdcwd
-#endif
-
-#ifdef ENABLE_PTHREAD
-#include <pthread.h>
-#endif
-
-#ifdef ENABLE_NLS
-#include <libintl.h>
-#endif
 
 /*
  * Mutual exclusion lock of Pthreads.
@@ -128,28 +103,6 @@
 #ifndef HAVE_STRCASECMP
 #define strcasecmp eb_strcasecmp
 #define strncasecmp eb_strncasecmp
-#endif
-
-#ifndef HAVE_GETADDRINFO
-#define addrinfo ebnet_addrinfo
-#define getaddrinfo ebnet_getaddrinfo
-#define freeaddrinfo ebnet_freeaddrinfo
-#endif
-
-#ifndef HAVE_GETNAMEINFO
-#define getnameinfo ebnet_getnameinfo
-#endif
-
-#ifndef HAVE_GAI_STRERROR
-#define gai_strerror ebnet_gai_strerror
-#endif
-
-#ifndef IN6ADDR_ANY_DECLARED
-#define in6addr_any ebnet_in6addr_any
-#endif
-
-#ifndef IN6ADDR_LOOPBACK_DECLARED
-#define in6addr_loopback ebnet_in6addr_loopback
 #endif
 
 #endif /* EB_BUILD_PRE_H */

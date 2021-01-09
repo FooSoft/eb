@@ -12,7 +12,7 @@
  * 3. Neither the name of the project nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE PROJECT AND CONTRIBUTORS ``AS IS'' AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -29,20 +29,7 @@
 #include "build-pre.h"
 #include "eb.h"
 #include "error.h"
-#ifdef ENABLE_EBNET
-#include "ebnet.h"
-#endif
 #include "build-post.h"
-
-#if defined(DOS_FILE_PATH) && defined(HAVE_MBSTRING_H)
-/* a path may contain double-byte chars in SJIS. */
-#include <mbstring.h>
-#define strchr	_mbschr
-#define strrchr	_mbsrchr
-#endif
-
-
-#ifndef DOS_FILE_PATH
 
 /*
  * Canonicalize `path_name' (UNIX version).
@@ -87,104 +74,6 @@ eb_canonicalize_path_name(char *path_name)
     return EB_SUCCESS;
 }
 
-#else /* DOS_FILE_PATH */
-
-/*
- * Canonicalize `path_name' (DOS version).
- * Convert a path name to an absolute path with drive letter unless
- * that is an UNC path.
- *
- * Original version by KSK Jan/30/1998.
- * Current version by Motoyuki Kasahara.
- */
-EB_Error_Code
-eb_canonicalize_path_name(char *path_name)
-{
-    char cwd[EB_MAX_PATH_LENGTH + 1];
-    char temporary_path_name[EB_MAX_PATH_LENGTH + 1];
-    char *slash;
-    char *last_backslash;
-
-    /*
-     * Replace `/' with `\\'.
-     */
-    slash = path_name;
-    for (;;) {
-	slash = strchr(slash, '/');
-	if (slash == NULL)
-	    break;
-	*slash++ = '\\';
-    }
-
-    if (*path_name == '\\' && *(path_name + 1) == '\\') {
-	/*
-	 * `path_name' is UNC path.  Nothing to be done.
-	 */
-    } else if (ASCII_ISALPHA(*path_name) && *(path_name + 1) == ':') {
-	/*
-	 * `path_name' has a drive letter.
-	 * Nothing to be done if it is an absolute path.
-	 */
-	if (*(path_name + 2) != '\\') {
-	    /*
-	     * `path_name' is a relative path.
-	     * Covert the path name to an absolute path.
-	     */
-	    if (getdcwd(ASCII_TOUPPER(*path_name) - 'A' + 1, cwd,
-		EB_MAX_PATH_LENGTH + 1) == NULL) {
-		return EB_ERR_FAIL_GETCWD;
-	    }
-	    if (EB_MAX_PATH_LENGTH < strlen(cwd) + 1 + strlen(path_name + 2))
-		return EB_ERR_TOO_LONG_FILE_NAME;
-	    sprintf(temporary_path_name, "%s\\%s", cwd, path_name + 2);
-	    strcpy(path_name, temporary_path_name);
-	}
-    } else if (*path_name == '\\') {
-	/*
-	 * `path_name' has no drive letter and is an absolute path.
-	 * Add a drive letter to the path name.
-	 */
-	if (getcwd(cwd, EB_MAX_PATH_LENGTH + 1) == NULL)
-	    return EB_ERR_FAIL_GETCWD;
-	cwd[1] = '\0';
-	if (EB_MAX_PATH_LENGTH < strlen(cwd) + 1 + strlen(path_name))
-	    return EB_ERR_TOO_LONG_FILE_NAME;
-	sprintf(temporary_path_name, "%s:%s", cwd, path_name);
-	strcpy(path_name, temporary_path_name);
-
-    } else {
-	/*
-	 * `path_name' has no drive letter and is a relative path.
-	 * Add a drive letter and convert it to an absolute path.
-	 */
-	if (getcwd(cwd, EB_MAX_PATH_LENGTH + 1) == NULL)
-	    return EB_ERR_FAIL_GETCWD;
-
-	if (EB_MAX_PATH_LENGTH < strlen(cwd) + 1 + strlen(path_name))
-	    return EB_ERR_TOO_LONG_FILE_NAME;
-	sprintf(temporary_path_name, "%s\\%s", cwd, path_name);
-	strcpy(path_name, temporary_path_name);
-    }
-
-
-    /*
-     * Now `path_name' is `X:\...' or `\\...'.
-     * Unless it is "X:\", eliminate `\' in the tail of the path name.
-     */
-    last_backslash = strrchr(path_name, '\\');
-    if (ASCII_ISALPHA(*path_name)) {
-	if (last_backslash != path_name + 2 && *(last_backslash + 1) == '\0')
-	    *last_backslash = '\0';
-    } else {
-	if (last_backslash != path_name + 1 && *(last_backslash + 1) == '\0')
-	    *last_backslash = '\0';
-    }
-
-    return EB_SUCCESS;
-}
-
-#endif /* DOS_FILE_PATH */
-
 
 /*
  * Canonicalize file name.
@@ -220,11 +109,6 @@ eb_fix_directory_name(const char *path, char *directory_name)
 {
     struct dirent *entry;
     DIR *dir;
-
-#ifdef ENABLE_EBNET
-    if (is_ebnet_url(path))
-	return ebnet_fix_directory_name(path, directory_name);
-#endif
 
     /*
      * Open the directory `path'.
@@ -291,14 +175,7 @@ eb_fix_path_name_suffix(char *path_name, const char *suffix)
     char *dot;
     char *semicolon;
 
-#ifndef DOS_FILE_PATH
     base_name = strrchr(path_name, '/');
-#else
-    if (is_ebnet_url(path_name))
-	base_name = strrchr(path_name, '/');
-    else
-	base_name = strrchr(path_name, '\\');
-#endif
     if (base_name == NULL)
 	base_name = path_name;
     else
@@ -372,13 +249,6 @@ eb_find_file_name(const char *path_name, const char *target_file_name,
     struct dirent *entry;
     size_t d_namlen;
     int found = FOUND_NONE;
-
-#ifdef ENABLE_EBNET
-    if (is_ebnet_url(path_name)) {
-	return ebnet_find_file_name(path_name, target_file_name,
-	    found_file_name);
-    }
-#endif
 
     strcpy(ebz_target_file_name, target_file_name);
     strcat(ebz_target_file_name, ".ebz");
@@ -508,19 +378,10 @@ void
 eb_compose_path_name(const char *path_name, const char *file_name,
     char *composed_path_name)
 {
-#ifndef DOS_FILE_PATH
     if (strcmp(path_name, "/") == 0)
 	sprintf(composed_path_name, "%s%s", path_name, file_name);
     else
 	sprintf(composed_path_name, "%s/%s", path_name, file_name);
-#else
-    if (is_ebnet_url(path_name))
-	sprintf(composed_path_name, "%s/%s", path_name, file_name);
-    else if (ASCII_ISALPHA(*path_name) && strcmp(path_name + 1, ":\\") == 0)
-	sprintf(composed_path_name, "%s%s", path_name, file_name);
-    else
-	sprintf(composed_path_name, "%s\\%s", path_name, file_name);
-#endif
 }
 
 
@@ -533,7 +394,6 @@ void
 eb_compose_path_name2(const char *path_name, const char *sub_directory_name,
     const char *file_name, char *composed_path_name)
 {
-#ifndef DOS_FILE_PATH
     if (strcmp(path_name, "/") == 0) {
 	sprintf(composed_path_name, "%s%s/%s",
 	    path_name, sub_directory_name, file_name);
@@ -541,19 +401,6 @@ eb_compose_path_name2(const char *path_name, const char *sub_directory_name,
 	sprintf(composed_path_name, "%s/%s/%s",
 	    path_name, sub_directory_name, file_name);
     }
-#else
-    if (is_ebnet_url(path_name)) {
-	sprintf(composed_path_name, "%s/%s/%s",
-	    path_name, sub_directory_name, file_name);
-    } else if (ASCII_ISALPHA(*path_name)
-	&& strcmp(path_name + 1, ":\\") == 0) {
-	sprintf(composed_path_name, "%s%s\\%s",
-	    path_name, sub_directory_name, file_name);
-    } else {
-	sprintf(composed_path_name, "%s\\%s\\%s",
-	    path_name, sub_directory_name, file_name);
-    }
-#endif
 }
 
 
@@ -567,7 +414,6 @@ eb_compose_path_name3(const char *path_name, const char *sub_directory_name,
     const char *sub2_directory_name, const char *file_name,
     char *composed_path_name)
 {
-#ifndef DOS_FILE_PATH
     if (strcmp(path_name, "/") == 0) {
 	sprintf(composed_path_name, "%s%s/%s/%s",
 	    path_name, sub_directory_name, sub2_directory_name, file_name);
@@ -575,19 +421,6 @@ eb_compose_path_name3(const char *path_name, const char *sub_directory_name,
 	sprintf(composed_path_name, "%s/%s/%s/%s",
 	    path_name, sub_directory_name, sub2_directory_name, file_name);
     }
-#else
-    if (is_ebnet_url(path_name)) {
-	sprintf(composed_path_name, "%s/%s/%s/%s",
-	    path_name, sub_directory_name, sub2_directory_name, file_name);
-    } else if (ASCII_ISALPHA(*path_name)
-	&& strcmp(path_name + 1, ":\\") == 0) {
-	sprintf(composed_path_name, "%s%s\\%s\\%s",
-	    path_name, sub_directory_name, sub2_directory_name, file_name);
-    } else {
-	sprintf(composed_path_name, "%s\\%s\\%s\\%s",
-	    path_name, sub_directory_name, sub2_directory_name, file_name);
-    }
-#endif
 }
 
 
@@ -760,14 +593,7 @@ eb_path_name_zio_code(const char *path_name, Zio_Code default_zio_code,
     const char *base_name;
     const char *dot;
 
-#ifndef DOS_FILE_PATH
     base_name = strrchr(path_name, '/');
-#else
-    if (is_ebnet_url(path_name))
-	base_name = strrchr(path_name, '/');
-    else
-	base_name = strrchr(path_name, '\\');
-#endif
     if (base_name != NULL)
 	base_name++;
     else

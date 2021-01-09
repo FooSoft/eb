@@ -1308,4 +1308,3 @@ eb_reverse_word_jis(char *word)
 
     LOG(("out: eb_reverse_word_jis()"));
 }
-

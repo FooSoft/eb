@@ -12,7 +12,7 @@
  * 3. Neither the name of the project nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE PROJECT AND CONTRIBUTORS ``AS IS'' AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -113,11 +113,7 @@ extern "C" {
 #define EB_ERR_NO_CANDIDATES		60
 #define EB_ERR_END_OF_CONTENT		61
 #define EB_ERR_NO_PREV_SEEK		62
-#define EB_ERR_EBNET_UNSUPPORTED	63
-#define EB_ERR_EBNET_FAIL_CONNECT	64
 
-#define EB_ERR_EBNET_SERVER_BUSY	65
-#define EB_ERR_EBNET_NO_PERMISSION	66
 #define EB_ERR_UNBOUND_BOOKLIST		67
 #define EB_ERR_NO_SUCH_BOOK		68
 

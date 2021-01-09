@@ -12,7 +12,7 @@
  * 3. Neither the name of the project nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE PROJECT AND CONTRIBUTORS ``AS IS'' AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -183,17 +183,6 @@
         + (*(const unsigned char *)((p) + 3) << 24))
 
 /*
- * Test whether the path is URL with the `ebnet' scheme.
- */
-#define is_ebnet_url(p) \
-	(   ((p)[0] == 'E' || (p)[0] == 'e') \
-	 && ((p)[1] == 'B' || (p)[1] == 'b') \
-	 && ((p)[2] == 'N' || (p)[2] == 'n') \
-	 && ((p)[3] == 'E' || (p)[3] == 'e') \
-	 && ((p)[4] == 'T' || (p)[4] == 't') \
-	 && (p)[5] == ':' && (p)[6] == '/' && (p)[7] == '/')
-
-/*
  * Test whether `off_t' represents a large integer.
  */
 #define off_t_is_large \
@@ -251,7 +240,7 @@ EB_Error_Code eb_find_file_name3(const char *path_name,
 void eb_compose_path_name(const char *path_name, const char *file_name,
     char *composed_path_name);
 void eb_compose_path_name2(const char *path_name,
-    const char *sub_directory_name, const char *file_name, 
+    const char *sub_directory_name, const char *file_name,
     char *composed_path_name);
 void eb_compose_path_name3(const char *path_name,
     const char *sub_directory_name, const char *sub2_directory_name,

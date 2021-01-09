@@ -12,7 +12,7 @@
  * 3. Neither the name of the project nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE PROJECT AND CONTRIBUTORS ``AS IS'' AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -30,13 +30,6 @@
 #include "eb.h"
 #include "error.h"
 #include "build-post.h"
-
-/*
- * Mutex for gettext function call.
- */
-#if defined(ENABLE_NLS) && defined(ENABLE_PTHREAD)
-pthread_mutex_t gettext_mutex = PTHREAD_MUTEX_INITIALIZER;
-#endif
 
 /*
  * Error code strings.

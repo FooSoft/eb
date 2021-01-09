@@ -12,7 +12,7 @@
  * 3. Neither the name of the project nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE PROJECT AND CONTRIBUTORS ``AS IS'' AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -70,7 +70,7 @@ extern "C" {
 #define ZIO_EPWING			2
 #define ZIO_EPWING6			3
 #define ZIO_SEBXA			4
-#define ZIO_INVALID        		-1
+#define ZIO_INVALID -1
 #define ZIO_REOPEN			-2
 
 /*
@@ -206,11 +206,6 @@ struct Zio_Struct {
      * Add this value to offset written in index. (S-EBXA compression only)
      */
     off_t index_base;
-
-    /*
-     * ebnet mode flag.
-     */
-    int is_ebnet;
 };
 
 /*

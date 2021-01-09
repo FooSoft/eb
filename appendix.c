@@ -12,7 +12,7 @@
  * 3. Neither the name of the project nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE PROJECT AND CONTRIBUTORS ``AS IS'' AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -30,9 +30,6 @@
 #include "eb.h"
 #include "error.h"
 #include "appendix.h"
-#ifdef ENABLE_EBNET
-#include "ebnet.h"
-#endif
 #include "build-post.h"
 
 /*
@@ -40,12 +37,6 @@
  */
 static EB_Book_Code appendix_counter = 0;
 
-/*
- * Mutex for `appendix_counter'.
- */
-#ifdef ENABLE_PTHREAD
-static pthread_mutex_t appendix_counter_mutex = PTHREAD_MUTEX_INITIALIZER;
-#endif
 
 /*
  * Unexported functions.
@@ -102,9 +93,6 @@ eb_initialize_appendix(EB_Appendix *appendix)
     appendix->subbook_count = 0;
     appendix->subbooks = NULL;
     appendix->subbook_current = NULL;
-#ifdef ENABLE_EBNET
-    appendix->ebnet_file = -1;
-#endif
     eb_initialize_lock(&appendix->lock);
     eb_initialize_alt_caches(appendix);
 
@@ -140,10 +128,6 @@ eb_finalize_appendix(EB_Appendix *appendix)
     eb_finalize_lock(&appendix->lock);
     eb_finalize_alt_caches(appendix);
 
-#ifdef ENABLE_EBNET
-    ebnet_finalize_appendix(appendix);
-#endif
-
     LOG(("out: eb_finalize_appendix()"));
 }
 
@@ -156,7 +140,6 @@ eb_bind_appendix(EB_Appendix *appendix, const char *path)
 {
     EB_Error_Code error_code;
     char temporary_path[EB_MAX_PATH_LENGTH + 1];
-    int is_ebnet;
 
     eb_lock(&appendix->lock);
     LOG(("in: eb_bind_appendix(path=%s)", path));
@@ -177,17 +160,6 @@ eb_bind_appendix(EB_Appendix *appendix, const char *path)
     pthread_mutex_unlock(&appendix_counter_mutex);
 
     /*
-     * Check whether `path' is URL.
-     */
-    is_ebnet = is_ebnet_url(path);
-#ifndef ENABLE_EBNET
-    if (is_ebnet) {
-	error_code = EB_ERR_EBNET_UNSUPPORTED;
-	goto failed;
-    }
-#endif
-
-    /*
      * Set path of the appendix.
      * The length of the file name "path/subdir/subsubdir/file.;1" must
      * be EB_MAX_PATH_LENGTH maximum.
@@ -197,14 +169,7 @@ eb_bind_appendix(EB_Appendix *appendix, const char *path)
 	goto failed;
     }
     strcpy(temporary_path, path);
-#ifdef ENABLE_EBNET
-    if (is_ebnet)
-	error_code = ebnet_canonicalize_url(temporary_path);
-    else
-	error_code = eb_canonicalize_path_name(temporary_path);
-#else
     error_code = eb_canonicalize_path_name(temporary_path);
-#endif
     if (error_code != EB_SUCCESS)
 	goto failed;
     appendix->path_length = strlen(temporary_path);
@@ -221,17 +186,6 @@ eb_bind_appendix(EB_Appendix *appendix, const char *path)
 	goto failed;
     }
     strcpy(appendix->path, temporary_path);
-
-    /*
-     * Establish a connection with a ebnet server.
-     */
-#ifdef ENABLE_EBNET
-    if (is_ebnet) {
-	error_code = ebnet_bind_appendix(appendix, appendix->path);
-	if (error_code != EB_SUCCESS)
-	    goto failed;
-    }
-#endif
 
     /*
      * Read information from the catalog file.
@@ -443,5 +397,3 @@ eb_appendix_path(EB_Appendix *appendix, char *path)
     eb_unlock(&appendix->lock);
     return error_code;
 }
-
-

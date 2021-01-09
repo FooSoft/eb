@@ -371,13 +371,6 @@ struct EB_Appendix_Struct {
     EB_Appendix_Subbook *subbook_current;
 
     /*
-     * ebnet socket file.
-     */
-#ifdef EB_ENABLE_EBNET
-    int ebnet_file;
-#endif
-
-    /*
      * Lock.
      */
     EB_Lock lock;
@@ -903,13 +896,6 @@ struct EB_Book_Struct {
      * Context parameters for text reading.
      */
     EB_Search_Context search_contexts[EB_NUMBER_OF_SEARCH_CONTEXTS];
-
-    /*
-     * ebnet socket file.
-     */
-#ifdef EB_ENABLE_EBNET
-    int ebnet_file;
-#endif
 
     /*
      * Lock.
